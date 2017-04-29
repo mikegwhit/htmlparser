@@ -1,0 +1,7 @@
+{
+  "name": "htmlparser",
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "cheerio-advanced-selectors": "^1.1.1"
+  }
+}
