@@ -8,7 +8,7 @@ class HTMLParser {
      * @param {String} html An HTML string.
      */
     static getClosedElements(html) {
-        return html.match(/\<\s?([/][^>\n<]+?)\>/g);
+        return html.match(/\<\s?([/][^>\n<]+?)\>/g) || [];
     }
 
     /**
@@ -17,7 +17,7 @@ class HTMLParser {
      * @return {Array} An array of elements in the HTML string.
      */
     static getElements(html) {
-        return html.match(/\<([^>\n<]*[a-zA-Z0-9_\-])\>?/g);
+        return html.match(/\<([^>\n<]*[a-zA-Z0-9_\-])\>?/g) || [];
     }
 
     /**
@@ -38,7 +38,7 @@ class HTMLParser {
      * @param {String} html An HTML string.
      */
     static getOpenElements(html) {
-        return html.match(/\<[^\n\/]*[^\/\s][^\n\/]*([^>\n<]+)\/?\s*\>/g);
+        return html.match(/\<[^\n\/]*[^\/\s][^\n\/]*([^>\n<]+)\/?\s*\>/g) || [];
     }
 
     /**
@@ -46,7 +46,7 @@ class HTMLParser {
      * @param {String} html An HTML string.
      */
     static getSelfClosingElements(html) {
-        return html.match(/\<\s?([/].+?)\>/g);
+        return html.match(/\<\s?([/].+?)\>/g) || [];
     }
     
     /**
@@ -58,13 +58,13 @@ class HTMLParser {
     static rebuildNode(htmlString, offset) {
         let substr = htmlString.substr(0, offset);
         let precedingElements = HTMLParser.getElements(substr);
-        if (precedingElements) {
+        if (precedingElements.length > 0) {
             precedingElements = precedingElements.reverse();
         } else {
             precedingElements = [];
         }
         let closedElements = HTMLParser.getClosedElements(substr);
-        if (closedElements) {
+        if (closedElements.length > 0) {
             closedElements = closedElements.reverse();
         } else {
             closedElements = [];
@@ -86,8 +86,8 @@ class HTMLParser {
         let closingElements = 0;
         for (let i = 0; i < precedingElements.length; i++) {
             element = HTMLParser.getElementNames(precedingElements[i])[0];
-            isClosing = HTMLParser.getClosedElements(precedingElements[i]) 
-                != null;
+            isClosing = HTMLParser.getClosedElements(precedingElements[i])
+                .length > 0;
             if (element == '!--' || 
                 element == '!DOCTYPE') {
                 // get those DOCTYPE's!
@@ -145,6 +145,10 @@ class HTMLParser {
                 });
                 idx = {};
             }
+        }
+
+        if (path.length == 0) {
+            return '*';
         }
         
         return path.reverse().reduce((str, cur, idx) => {
